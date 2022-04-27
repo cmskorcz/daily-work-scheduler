@@ -4,7 +4,7 @@ body {
   line-height: 1;
 }
 
-textarea{
+input{
   background: transparent;
   border: none;
   resize: none;
@@ -23,6 +23,8 @@ textarea{
 
 .description{
   white-space: pre-wrap;
+  display: flex;
+  align-items: center;
 }
 
 .time-block{

@@ -12,8 +12,9 @@ $currentDay.text(moment().format('dddd, MMMM Do'));
 const generateSchedule = () => {
 
     for (let i = 0; i < 9; i++) {
-        let $row = $('<div>')
-            .addClass('row time-block');
+        let $row = $('<form>')
+            .addClass('row time-block')
+            .attr('id', `${hourCounter.format('H')}`);
 
         let $time = $('<div>')
             .addClass('col-2 hour')
@@ -26,6 +27,7 @@ const generateSchedule = () => {
 
         let $save = $('<button>')
             .addClass('col-2 saveBtn')
+            .attr('id', `${hourCounter.format('H')}`)
             .html('<i class="fas fa-save"></i>');
     
         $row.append($time, $task, $save);
@@ -33,7 +35,7 @@ const generateSchedule = () => {
 
         hourCounter.add(1, 'h');
     }
-
+    addEvents();
     checkHour();
 }
 
@@ -41,15 +43,49 @@ const generateSchedule = () => {
 const checkHour = () => {
     $('.description').each(function() {
         if (parseInt($(this).attr('id')) < parseInt(currentTime)) {
-            $(this).addClass('past')
+            $(this)
+                .removeClass('present future')
+                .addClass('past')
         } else if (parseInt($(this).attr('id')) === parseInt(currentTime)) {
-            $(this).addClass('present')
+            $(this)
+                .removeClass('past future')
+                .addClass('present')
         } else {
-            $(this).addClass('future')
+            $(this)
+                .removeClass('past present')
+                .addClass('future')
         }
     });
 
-    console.log('checked time')
+}
+
+
+const addEvents = () => {
+    // replaces initial div with textarea input on click
+    $('.description').on('click', function() {
+        let id = $(this).attr('id')
+
+        $(this).replaceWith($('<input>')
+            .addClass('col-8 description')
+            .attr('id', id))
+
+        checkHour();
+    })
+    
+    
+    $('.saveBtn').on('click', function(event) {
+        event.preventDefault();
+        let id = $(this).attr('id');
+        let input = $(`input[id="${id}"]`);
+        let value = input.val();
+
+        input.replaceWith($('<div>')
+            .html(`<p>${value}</p>`)
+            .addClass('col-8 description')
+            .attr('id', id));        
+        
+        checkHour();
+    })
 }
 
 generateSchedule();
