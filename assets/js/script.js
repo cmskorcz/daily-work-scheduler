@@ -38,6 +38,7 @@ const generateSchedule = () => {
         let $save = $('<button>')
             .addClass('col-2 saveBtn')
             .attr('id', `${milTime}`)
+            .attr('data-index', `${i}`)
             .html('<i class="fas fa-save"></i>');
     
         $row.append($time, $task, $save);
@@ -75,10 +76,12 @@ const addEvents = () => {
     // replaces initial div with textarea input on click
     $('.description').on('click', function() {
         let id = $(this).attr('id')
+        let index = $(this).attr('data-index')
 
         $(this).replaceWith($('<input>')
             .addClass('col-8 description')
-            .attr('id', id))
+            .attr('id', id)
+            .attr('data-index', index))
 
         checkHour();
     })
@@ -87,15 +90,20 @@ const addEvents = () => {
     $('.saveBtn').on('click', function(event) {
         event.preventDefault();
         let id = $(this).attr('id');
+        let index = $(this).attr('data-index');
         let input = $(`input[id="${id}"]`);
         let value = input.val();
 
         input.replaceWith($('<div>')
             .html(`<p>${value}</p>`)
             .addClass('col-8 description')
-            .attr('id', id));        
+            .attr('id', id)
+            .attr('data-index', index));        
         
+        saveToLocal(index, value);
         checkHour();
+
+
     })
 }
 
@@ -113,12 +121,23 @@ const populateFields = (hour, index) => {
         localStorage.setItem('schedule', JSON.stringify(taskArray))
 
     } else {
-        
+
         return taskArray[index].value
 
     }
 }
 
+const saveToLocal = (index, value) => {
+    let taskStore = localStorage.getItem('schedule');
+    let taskArray = JSON.parse(taskStore);
+
+    if (value) {
+
+        taskArray[index].value = value;
+        
+        localStorage.setItem('schedule', JSON.stringify(taskArray));
+    }
+}
 
 generateSchedule();
-setInterval(checkHour, (30*60*1000));
+setInterval(checkHour(), (30*60*1000));
