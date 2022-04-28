@@ -75,13 +75,15 @@ const checkHour = () => {
 const addEvents = () => {
     // replaces initial div with textarea input on click
     $('.description').on('click', function() {
+        let text = $(this).text();
         let id = $(this).attr('id')
         let index = $(this).attr('data-index')
 
         $(this).replaceWith($('<input>')
             .addClass('col-8 description')
             .attr('id', id)
-            .attr('data-index', index))
+            .attr('data-index', index)
+            .val(text))
 
         checkHour();
     })
@@ -101,11 +103,36 @@ const addEvents = () => {
             .attr('data-index', index));        
         
         saveToLocal(index, value);
+        editTasks();
         checkHour();
+    });
 
-
-    })
 }
+
+const editTasks = () => {
+    $('.description').on('click', 'p', function() {
+        let text = $(this).text();
+
+        let id = $(this)
+            .closest('.description')
+            .attr('id');
+
+        let index = $(this)
+            .closest('.description')
+            .attr('data-index');
+
+        $(this)
+            .replaceWith($('<input>')
+            .val(text)
+            .addClass('col-8 description')
+            .attr('id', id)
+            .attr('data-index', index))
+        
+        checkHour();
+    })
+
+}
+
 
 const populateFields = (hour, index) => {
     let taskStore = localStorage.getItem('schedule');
